@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 }
 
 void read_from_file(int output) {
-    FILE *vmstat_file = fopen(file_path, "r");
+    FILE *vmstat_file = fopen_s(file_path, "r");
     if (!vmstat_file) {
         printf("File doesn't exist\n");
         return;
@@ -38,7 +38,7 @@ void read_from_file(int output) {
 
     // Reading data from file
     int r, b, free_mem, buff, cache, sys, usr;
-    fscanf(vmstat_file, "r = %d\nb = %d\nfree = %d\nbuff = %d\ncache = %d\nsys = %d\nusr = %d",
+    fscanf_s(vmstat_file, "r = %d\nb = %d\nfree = %d\nbuff = %d\ncache = %d\nsys = %d\nusr = %d",
            &r, &b, &free_mem, &buff, &cache, &sys, &usr);
 
     fclose(vmstat_file);
@@ -47,8 +47,6 @@ void read_from_file(int output) {
     printf("--procs-- ------------memory---------- --cpu--\n");
     printf("  r   b         free   buff   cache    sys  usr\n");
     printf("%3d %3d   %10d %6d %7d   %4d %4d\n", r, b, free_mem, buff, cache, sys, usr);
-
-    // Optionally, you can add logic to handle the 'output' parameter as needed.
 }
 
 
