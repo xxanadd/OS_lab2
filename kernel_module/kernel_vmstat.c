@@ -35,27 +35,25 @@
 // #include <linux/zswap.h>
 #include <asm/page.h>
 
-#define PROCFS_NAME "hello_world"
-#define BUF_SIZE 2048
+#define PROCFS_NAME "lab_vmstat"
+#define BUF_SIZE 1024
 
-//Прототипы операций взаимодействия с procfs
+// Prototypes of procfs interaction operations
 static int      open_proc(struct inode *inode, struct file *file);
 static int      release_proc(struct inode *inode, struct file *file);
 static ssize_t  read_proc(struct file *filp, char __user *buffer, size_t length,loff_t * offset);
 static ssize_t  write_proc(struct file *filp, const char *buff, size_t len, loff_t * off);
 
-//Прототип функции создания данных для записи в фаил
+// Prototype of the function of creating data for writing to a file
 static size_t write_info(char __user *ubuf);
 
-// Объявление операций
+// Declaring operations
 static struct proc_ops proc_fops = {
     .proc_open = open_proc,
     .proc_read = read_proc,
     .proc_write = write_proc,
     .proc_release = release_proc
 };
-
-// static char hello_world_data[BUF_SIZE];
 
 static int open_proc(struct inode *inode, struct file *file) {
     printk(KERN_INFO "File opened");
@@ -96,7 +94,7 @@ static ssize_t read_proc(struct file *file, char __user *buffer, size_t count, l
 }
 
 static ssize_t write_proc(struct file *file, const char __user *buffer, size_t count, loff_t *pos) {
-    // Запись в файл не поддерживается, возвращаем ошибку
+    // Writing to file is not supported, return error
     return -EINVAL;
 }
 
@@ -114,14 +112,14 @@ static size_t write_info(char *buf) {
     int waiting_execution_count = 0;
     int waiting_io_count = 0;
 
-    // Итерируем по всем процессам в системе
+    // Iterate over all processes in the system
     for_each_process(task) {
-        // Проверяем состояние процесса
+        // Checking the status of the process
         if (task->__state == TASK_RUNNING) {
-            // Процесс ожидает выполнения
+            // The process is waiting for execution
             waiting_execution_count++;
         } else if (task->__state == TASK_INTERRUPTIBLE || task->__state == TASK_UNINTERRUPTIBLE) {
-            // Процесс находится в состоянии ожидания (ввода-вывода)
+            // The process is in the waiting (I/O) state
             waiting_io_count++;
         }
     };
@@ -182,7 +180,7 @@ static size_t write_info(char *buf) {
     return len;
 }
 
-static int __init hello_world_init(void) {
+static int __init kernel_vmstat_init(void) {
     struct proc_dir_entry *entry;
 
     entry = proc_create(PROCFS_NAME, 0666, NULL, &proc_fops);
@@ -191,17 +189,17 @@ static int __init hello_world_init(void) {
         return -ENOMEM;
     }
 
-    printk(KERN_INFO "Hello, World! Module Loaded\n");
+    printk(KERN_INFO "kernel_vmstat module Loaded\n");
     return 0;
 }
 
-static void __exit hello_world_exit(void) {
+static void __exit kernel_vmstat_exit(void) {
     remove_proc_entry(PROCFS_NAME, NULL);
-    printk(KERN_INFO "Hello, World! Module Unloaded\n");
+    printk(KERN_INFO "kernel_vmstat module Unloaded\n");
 }
 
-module_init(hello_world_init);
-module_exit(hello_world_exit);
+module_init(kernel_vmstat_init);
+module_exit(kernel_vmstat_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Your Name");
+MODULE_AUTHOR("Stepan Dubrov");

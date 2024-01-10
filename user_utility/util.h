@@ -1,4 +1,4 @@
-#define FILE_NAME "hello_world"
+#define FILE_NAME "lab_vmstat"
 #define BUFFER_SIZE 1024
 #define PROC_PATH "/proc/"
 
